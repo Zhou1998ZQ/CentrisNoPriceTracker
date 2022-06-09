@@ -1,0 +1,28 @@
+springdoc:
+  swagger-ui:
+    path: /swagger/index.html
+  api-docs:
+    path: /swagger/v3/api-docs
+
+
+spring:
+  rabbitmq:
+    addresses: [localhost:5672]
+    username: guest
+    password: guest
+    listener:
+      direct:
+        acknowledge-mode: manual
+
+  datasource:
+    url: jdbc:mariadb://localhost:3306/centris
+    username: root
+    password: root
+    hikari:
+      pool-name: HikariCP
+      connection-timeout: 3000
+      connection-test-query: SELECT 1
+      maximum-pool-size: 64
+      minimum-idle: 4
+      idle-timeout: 180000
+      max-lifetime: 1800000

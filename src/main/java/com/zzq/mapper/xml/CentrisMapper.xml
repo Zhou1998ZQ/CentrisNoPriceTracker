@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzq.mapper.CentrisMapper">
+
+    <resultMap id="BaseResultMap" type="com.zhida.core.entity.User">
+        <id column="centris_id" property="centrisId" />
+        <result column="centris_no" property="centrisNo" />
+        <result column="is_active" property="isActive" />
+        <result column="created_at" property="createdAt" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        centris_id, centris_no, is_active, created_at
+    </sql>
+
+</mapper>
