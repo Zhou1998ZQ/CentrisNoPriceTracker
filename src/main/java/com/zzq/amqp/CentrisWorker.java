@@ -2,6 +2,7 @@ package com.zzq.amqp;
 
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.zzq.config.AmqpConfig;
 import com.zzq.entity.Centris;
 import com.zzq.mapper.CentrisMapper;
@@ -13,6 +14,7 @@ import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
+
 
 @Component
 @Slf4j
@@ -26,12 +28,30 @@ public class CentrisWorker {
     public void receiver(Long centrisNo, Message message) {
 
         try {
+
             String url = "https://www.centris.ca/fr/maison~a-vendre~gatineau-hull/" + centrisNo;
             Document document = Jsoup.connect(url).get();
+
+            Centris centris = new Centris().setCentrisNo(centrisNo);
+
             String price = document.selectFirst("span[class=text-nowrap]").text();
-            centrisMapper.insert(new Centris().setCentrisNo(centrisNo)
-                    .setPrice(price)
-            );
+            if (price.isBlank()) {
+                price = "This property is no longer available";
+                centris.setIsActive(Boolean.FALSE);
+
+                centrisMapper.selectList(new LambdaQueryWrapper<Centris>()
+                        .eq(Centris::getCentrisNo, centrisNo)
+                ).forEach(
+                        centrisEntity -> {
+                            centrisMapper.updateById(centrisEntity.setIsActive(Boolean.FALSE));
+                        }
+                );
+            }
+
+            centris.setPrice(price);
+
+
+            centrisMapper.insert(centris);
 
         } catch (Exception e) {
 
